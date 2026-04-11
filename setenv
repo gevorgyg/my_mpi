@@ -1,0 +1,11 @@
+#!/bin/bash
+set -e
+
+dnf install -y --skip-unavailable \
+    gcc g++ make binutils diffutils patch \
+    ncurses-devel elfutils-libelf-devel openssl-devel \
+    bison flex clang lld llvm clang-tools-extra \
+    python3-devel bc perl \
+    git nodejs npm ripgrep fd-find curl unzip \
+        cargo jq 
+
