@@ -79,6 +79,9 @@
 
 #include "exit.h"
 
+/* MPI kernel extension */
+extern void mpi_clear_queue(struct task_struct *tsk);
+
 /*
  * The default value should be high enough to not crash a system that randomly
  * crashes its kernel from time to time, but low enough to at least not permit
@@ -905,6 +908,13 @@ void __noreturn do_exit(long code)
 	kthread = tsk_is_kthread(tsk);
 	if (unlikely(kthread))
 		kthread_do_exit(kthread, code);
+
+	/* MPI: free any pending messages */
+	if (tsk->mpi_registered) {
+		mpi_clear_queue(tsk);
+		tsk->mpi_registered = 0;
+		tsk->mpi_gid = 0;
+	}
 
 	kcov_task_exit(tsk);
 	kmsan_task_exit(tsk);

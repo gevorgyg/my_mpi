@@ -863,8 +863,18 @@ __SYSCALL(__NR_listns, sys_listns)
 #define __NR_rseq_slice_yield 471
 __SYSCALL(__NR_rseq_slice_yield, sys_rseq_slice_yield)
 
+/* MPI kernel extension */
+#define __NR_mpi_register 472
+__SYSCALL(__NR_mpi_register, sys_mpi_register)
+#define __NR_mpi_send 473
+__SYSCALL(__NR_mpi_send, sys_mpi_send)
+#define __NR_mpi_receive 474
+__SYSCALL(__NR_mpi_receive, sys_mpi_receive)
+#define __NR_mpi_unregister 475
+__SYSCALL(__NR_mpi_unregister, sys_mpi_unregister)
+
 #undef __NR_syscalls
-#define __NR_syscalls 472
+#define __NR_syscalls 476
 
 /*
  * 32 bit systems traditionally used different

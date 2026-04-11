@@ -1639,6 +1639,12 @@ struct task_struct {
 	/* CPU-specific state of this task: */
 	struct thread_struct		thread;
 
+	/* MPI kernel extension */
+	int				mpi_registered;
+	int				mpi_gid;
+	struct list_head		mpi_queue;
+	spinlock_t			mpi_lock;
+
 	/*
 	 * New fields for task_struct should be added above here, so that
 	 * they are included in the randomized portion of task_struct.

@@ -1,56 +1,39 @@
-# Minimal arm64 config for macOS container tool + MPI syscalls
+# Container defconfig for macOS container tool + MPI syscalls
+# Based on arm64 defconfig with container-specific additions.
 #
-# Usage:
-#   make ARCH=arm64 container_defconfig
-#   make ARCH=arm64 -j$(nproc) Image
+# Usage (inside Linux build container):
+#   cd /linux
+#   make mrproper
+#   make defconfig
+#   scripts/config --enable VSOCKETS
+#   scripts/config --enable VIRTIO_VSOCKETS
+#   scripts/config --enable VIRTIO_FS
+#   scripts/config --enable FUSE_FS
+#   scripts/config --enable OVERLAY_FS
+#   scripts/config --enable SQUASHFS
+#   scripts/config --enable SQUASHFS_XZ
+#   scripts/config --enable SQUASHFS_ZSTD
+#   scripts/config --enable NET_9P
+#   scripts/config --enable NET_9P_VIRTIO
+#   scripts/config --enable 9P_FS
+#   scripts/config --enable 9P_FS_POSIX_ACL
+#   scripts/config --enable USER_NS
+#   scripts/config --enable POSIX_MQUEUE
+#   scripts/config --enable BLK_DEV_INITRD
+#   make olddefconfig
+#   make -j$(nproc) Image
+#
+# Or use the merge script below.
 
-# Base
-CONFIG_ARM64=y
-CONFIG_64BIT=y
-CONFIG_SMP=y
-CONFIG_NR_CPUS=8
-CONFIG_HZ_250=y
-CONFIG_NO_HZ_IDLE=y
-CONFIG_HIGH_RES_TIMERS=y
-CONFIG_PREEMPT=y
-CONFIG_PRINTK=y
-CONFIG_BUG=y
-CONFIG_SYSCTL=y
-CONFIG_POSIX_MQUEUE=y
-CONFIG_MULTIUSER=y
-CONFIG_SYSFS=y
-CONFIG_PROC_FS=y
-CONFIG_PROC_SYSCTL=y
-CONFIG_TMPFS=y
-CONFIG_FUTEX=y
-CONFIG_EPOLL=y
-CONFIG_SIGNALFD=y
-CONFIG_TIMERFD=y
-CONFIG_EVENTFD=y
-CONFIG_AIO=y
-CONFIG_IO_URING=y
-CONFIG_ADVISE_SYSCALLS=y
+# ---- Everything below merges ON TOP of defconfig ----
 
-# TTY / Console
-CONFIG_TTY=y
-CONFIG_VT=y
-CONFIG_SERIAL_AMBA_PL011=y
-CONFIG_SERIAL_AMBA_PL011_CONSOLE=y
+# Virtio vsock (container agent socket)
+CONFIG_VSOCKETS=y
+CONFIG_VIRTIO_VSOCKETS=y
 
-# Block layer
-CONFIG_BLOCK=y
-
-# Filesystems
-CONFIG_EXT4_FS=y
-CONFIG_EXT4_USE_FOR_EXT2=y
-CONFIG_OVERLAY_FS=y
-CONFIG_SQUASHFS=y
-CONFIG_SQUASHFS_XZ=y
-CONFIG_SQUASHFS_ZSTD=y
-CONFIG_VFAT_FS=y
+# VirtioFS (host volume mounts)
+CONFIG_VIRTIO_FS=y
 CONFIG_FUSE_FS=y
-CONFIG_DEVTMPFS=y
-CONFIG_DEVTMPFS_MOUNT=y
 
 # 9P (host filesystem sharing)
 CONFIG_NET_9P=y
@@ -58,42 +41,21 @@ CONFIG_NET_9P_VIRTIO=y
 CONFIG_9P_FS=y
 CONFIG_9P_FS_POSIX_ACL=y
 
-# Virtio (container VM transport)
-CONFIG_VIRTIO=y
-CONFIG_VIRTIO_PCI=y
-CONFIG_VIRTIO_BLK=y
-CONFIG_VIRTIO_NET=y
-CONFIG_VIRTIO_CONSOLE=y
-CONFIG_VIRTIO_MMIO=y
-CONFIG_VIRTIO_BALLOON=y
-CONFIG_HW_RANDOM_VIRTIO=y
-CONFIG_DRM_VIRTIO_GPU=y
-CONFIG_VIRTIO_FS=y
-CONFIG_VIRTIO_INPUT=y
+# Container filesystem layers
+CONFIG_OVERLAY_FS=y
+CONFIG_SQUASHFS=y
+CONFIG_SQUASHFS_XZ=y
+CONFIG_SQUASHFS_ZSTD=y
 
-# PCI
-CONFIG_PCI=y
-CONFIG_PCI_HOST_GENERIC=y
+# Namespaces
+CONFIG_NAMESPACES=y
+CONFIG_UTS_NS=y
+CONFIG_IPC_NS=y
+CONFIG_PID_NS=y
+CONFIG_NET_NS=y
+CONFIG_USER_NS=y
 
-# Networking (basic)
-CONFIG_NET=y
-CONFIG_INET=y
-CONFIG_IPV6=y
-CONFIG_NETDEVICES=y
-CONFIG_PACKET=y
-CONFIG_UNIX=y
-CONFIG_NETFILTER=y
-
-# Memory
-CONFIG_SLAB=y
-CONFIG_MEMORY_HOTPLUG=y
-CONFIG_MEMORY_HOTREMOVE=y
-
-# Modules (optional, for flexibility)
-CONFIG_MODULES=y
-CONFIG_MODULE_UNLOAD=y
-
-# cgroups (container needs)
+# cgroups
 CONFIG_CGROUPS=y
 CONFIG_CGROUP_CPUACCT=y
 CONFIG_CGROUP_SCHED=y
@@ -103,34 +65,11 @@ CONFIG_CGROUP_PIDS=y
 CONFIG_MEMCG=y
 CONFIG_CPUSETS=y
 
-# Namespaces (container needs)
-CONFIG_NAMESPACES=y
-CONFIG_UTS_NS=y
-CONFIG_IPC_NS=y
-CONFIG_PID_NS=y
-CONFIG_NET_NS=y
-CONFIG_USER_NS=y
-CONFIG_MNT_NS=y
+# initramfs
+CONFIG_BLK_DEV_INITRD=y
+CONFIG_RD_GZIP=y
+CONFIG_RD_XZ=y
+CONFIG_RD_ZSTD=y
 
-# Disable unnecessary stuff
-# CONFIG_WIRELESS is not set
-# CONFIG_WLAN is not set
-# CONFIG_SOUND is not set
-# CONFIG_USB is not set
-# CONFIG_INPUT_MOUSE is not set
-# CONFIG_INPUT_KEYBOARD is not set
-# CONFIG_HID is not set
-# CONFIG_MEDIA_SUPPORT is not set
-# CONFIG_SCSI is not set
-# CONFIG_ATA is not set
-# CONFIG_MD is not set
-# CONFIG_INFINIBAND is not set
-# CONFIG_STAGING is not set
-# CONFIG_DRM_NOUVEAU is not set
-# CONFIG_DRM_RADEON is not set
-# CONFIG_DRM_AMDGPU is not set
-# CONFIG_DRM_I915 is not set
-# CONFIG_FB is not set
-# CONFIG_BLUETOOTH is not set
-# CONFIG_NFS_FS is not set
-# CONFIG_CRYPTO_HW is not set
+# MPI testing
+CONFIG_POSIX_MQUEUE=y
